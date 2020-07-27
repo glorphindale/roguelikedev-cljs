@@ -14,3 +14,10 @@ Peculiarities: reloading index.html results in 5Mb of data to be transferred.
 Added box movement - keypress listeners, rendering loop.
 
 Issues: don't understand how reloading code from REPL works - sometimes functions are updated, sometimes not. Hard to understand how to properly interop with JS libraries.
+
+
+### Day 3 (27.07.2020)
+
+Added sprite rendering.
+
+Issued: is constant ctx retrieval bad? What is a proper architecture - should context be obtained once and used to draw everything then?
