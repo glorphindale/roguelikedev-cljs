@@ -20,4 +20,12 @@ Issues: don't understand how reloading code from REPL works - sometimes function
 
 Added sprite rendering.
 
-Issued: is constant ctx retrieval bad? What is a proper architecture - should context be obtained once and used to draw everything then?
+Issues: is constant ctx retrieval bad? What is a proper architecture - should context be obtained once and used to draw everything then?
+
+### Day 4 (29.07.2020)
+
+Tried to tune simple 'clj --main cljs.main' to work both as an nREPL connection and as a compilation watcher, but failed.
+
+Switched to using [Figwheel](https://figwheel.org/tutorial.html). Now I can issue 'make', wait a bit, and after that saving any cljs file will result in its immediate reload in the browser.
+
+Notes: some things are not reloaded, like keyboard listener (it is set once in 'init').

@@ -1,2 +1,2 @@
 run:
-	clj --main cljs.main --compile parenslike.game --repl
+	clojure -m figwheel.main --compile parenslike.game --repl
