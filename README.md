@@ -29,3 +29,11 @@ Tried to tune simple 'clj --main cljs.main' to work both as an nREPL connection 
 Switched to using [Figwheel](https://figwheel.org/tutorial.html). Now I can issue 'make', wait a bit, and after that saving any cljs file will result in its immediate reload in the browser.
 
 Notes: some things are not reloaded, like keyboard listener (it is set once in 'init').
+
+### Day 5 (30.07.2020)
+
+Attempt to model the world with tiles as records (similar to [Caves of Clojure](https://stevelosh.com/blog/2012/07/caves-of-clojure-03-1/) ), but not much success. Started module breakdown.
+
+### Day 6 (31.07.2020)
+
+Model world as map of [x y] -> tile type, render it.

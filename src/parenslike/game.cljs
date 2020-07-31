@@ -1,13 +1,10 @@
 (ns parenslike.game
-  (:require [goog.events :as g-events]))
+  (:require [goog.events :as g-events]
+            [parenslike.gfx :as gfx]  
+            [parenslike.world :as world]))
 
 (def height 600)
 (def width 600)
-(def tile-size 64)
-
-(def sprites
-  {:player 0
-   })
 
 (defonce state (atom {:init false :position {:x 0 :y 0}}))
 
@@ -25,26 +22,17 @@
       )
 ))
 
-(defn draw-image [sprite x y]
-  (let [canvas (. js/document querySelector "canvas")
-        ctx (. canvas getContext "2d")]
-    (. ctx drawImage
-       spritesheet
-       (* 16 (sprites sprite))
-       0
-       16
-       16
-       (* tile-size x)
-       (* tile-size y)
-       tile-size
-       tile-size)))
-
 (defn draw []
   (let [canvas (. js/document querySelector "canvas")
         ctx (. canvas getContext "2d")
-        position (get-in @state [:position])]
+        spritesheet (get-in @state [:spritesheet])
+        position (get-in @state [:position])
+        world (get-in @state [:world])]
     (. ctx clearRect 0 0 width height)
-    (draw-image :player (:x position) (:y position))))
+    (doseq [[[x y] tile] world]
+      (gfx/draw-image spritesheet tile x y))
+    (gfx/draw-image spritesheet :player (:x position) (:y position))
+    ))
 
 
 (defn init []
@@ -55,9 +43,11 @@
         (set! (-> canvas .-height .-style) (str height "px"))
         (. js/window setInterval draw 15)
         (.addEventListener js/document "keypress" keypress)
-        (swap! state assoc-in [:init] true)
         (set! (.-src spritesheet) "spritesheet.png")
         (set! (.-imageSmoothingEnabled (. canvas getContext "2d")) false)
+        (swap! state assoc-in [:init] true)
+        (swap! state assoc-in [:spritesheet] spritesheet)
+        (swap! state assoc-in [:world] (world/gen-world))
         )))
 
 (js/console.log "Loading code")
