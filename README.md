@@ -37,3 +37,9 @@ Attempt to model the world with tiles as records (similar to [Caves of Clojure](
 ### Day 6 (31.07.2020)
 
 Model world as map of [x y] -> tile type, render it.
+
+### Day 7 (03.08.2020)
+
+Generate a walled world, add walls.
+
+Issues: code becomes tangled, too many places rely on each other.

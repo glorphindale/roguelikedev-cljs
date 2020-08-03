@@ -6,49 +6,86 @@
 (def height 600)
 (def width 600)
 
-(defonce state (atom {:init false :position {:x 0 :y 0}}))
+(defonce state (atom {:init false}))
 
 (defonce spritesheet
   (js/Image.))
 
+
+(def directions
+  {"w" [0 -1]
+   "s" [0 1]
+   "a" [-1 0]
+   "d" [1 0]})
+
+(defn tile-empty? [world tile]
+  (let [tile-type (world tile)]
+    (= tile-type :floor)))
+
+(defn get-empty-tile [world]
+  (let [[position _] (first (filter #(= (second %) :floor) world))]
+    position))
+
+(defn new-game []
+  (let [world (world/gen-world)
+        position (get-empty-tile world)]
+  {:game {
+          :world world
+          :player position}}
+  ))
+
+(defn can-move? [world new-pos]
+  (tile-empty? world new-pos))
+
+(defn try-move [game direction]
+  (let [[ox oy] (directions direction)
+        [px py] (game :player)
+        nx (+ ox px)
+        ny (+ oy py)]
+    (if (tile-empty? (:world game) [nx ny])
+      (assoc-in game [:player] [nx ny])
+      game)))
+
+(defn keypress-handler [event]
+  (case (.-key event)
+    "w"  (swap! state update-in [:game] #(try-move % "w"))
+    "s"  (swap! state update-in [:game] #(try-move % "s"))
+    "a"  (swap! state update-in [:game] #(try-move % "a"))
+    "d"  (swap! state update-in [:game] #(try-move % "d"))
+    "r"  (swap! state merge (new-game))
+    0
+    ))
+
 (defn keypress [event]
-  (do
-    (case (.-key event)
-      "w"  (swap! state update-in [:position :y] dec)
-      "s"  (swap! state update-in [:position :y] inc)
-      "a"  (swap! state update-in [:position :x] dec)
-      "d"  (swap! state update-in [:position :x] inc)
-      0
-      )
-))
+  (keypress-handler event))
 
 (defn draw []
   (let [canvas (. js/document querySelector "canvas")
         ctx (. canvas getContext "2d")
         spritesheet (get-in @state [:spritesheet])
-        position (get-in @state [:position])
-        world (get-in @state [:world])]
+        position (get-in @state [:game :player])
+        world (get-in @state [:game :world])]
     (. ctx clearRect 0 0 width height)
     (doseq [[[x y] tile] world]
       (gfx/draw-image spritesheet tile x y))
-    (gfx/draw-image spritesheet :player (:x position) (:y position))
+    (gfx/draw-image spritesheet :player (first position) (second position))
     ))
 
 
 (defn init []
   (let [canvas (. js/document querySelector "canvas")]
-    (do (set! (.-width canvas) width)
-        (set! (.-height canvas) height)
-        (set! (-> canvas .-width .-style) (str width "px"))
-        (set! (-> canvas .-height .-style) (str height "px"))
-        (. js/window setInterval draw 15)
-        (.addEventListener js/document "keypress" keypress)
-        (set! (.-src spritesheet) "spritesheet.png")
-        (set! (.-imageSmoothingEnabled (. canvas getContext "2d")) false)
-        (swap! state assoc-in [:init] true)
-        (swap! state assoc-in [:spritesheet] spritesheet)
-        (swap! state assoc-in [:world] (world/gen-world))
-        )))
+    (set! (.-width canvas) width)
+    (set! (.-height canvas) height)
+    (set! (-> canvas .-width .-style) (str width "px"))
+    (set! (-> canvas .-height .-style) (str height "px"))
+    (. js/window setInterval draw 15)
+    (.addEventListener js/document "keypress" keypress)
+    (set! (.-src spritesheet) "spritesheet.png")
+    (set! (.-imageSmoothingEnabled (. canvas getContext "2d")) false)
+    (swap! state assoc-in [:init] true)
+    (swap! state assoc-in [:spritesheet] spritesheet)
+    (swap! state merge (new-game))
+    ))
 
 (js/console.log "Loading code")
 
