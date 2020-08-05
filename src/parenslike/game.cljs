@@ -1,10 +1,11 @@
 (ns parenslike.game
   (:require [goog.events :as g-events]
             [parenslike.gfx :as gfx]  
+            [parenslike.utils :as utils]  
             [parenslike.world :as world]))
 
-(def height 600)
-(def width 600)
+(def height (* gfx/tile-size world/world-size))
+(def width (* gfx/tile-size world/world-size))
 
 (defonce state (atom {:init false}))
 
@@ -38,12 +39,9 @@
   (tile-empty? world new-pos))
 
 (defn try-move [game direction]
-  (let [[ox oy] (directions direction)
-        [px py] (game :player)
-        nx (+ ox px)
-        ny (+ oy py)]
-    (if (tile-empty? (:world game) [nx ny])
-      (assoc-in game [:player] [nx ny])
+  (let [new-pos (utils/pos+ (game :player) (directions direction))]
+    (if (tile-empty? (:world game) new-pos)
+      (assoc-in game [:player] new-pos)
       game)))
 
 (defn keypress-handler [event]
@@ -76,9 +74,9 @@
   (let [canvas (. js/document querySelector "canvas")]
     (set! (.-width canvas) width)
     (set! (.-height canvas) height)
-    (set! (-> canvas .-width .-style) (str width "px"))
-    (set! (-> canvas .-height .-style) (str height "px"))
-    (. js/window setInterval draw 15)
+    #_(set! (-> canvas .-width .-style) (str width "px"))
+    #_(set! (-> canvas .-height .-style) (str height "px"))
+    (. js/window setInterval draw 30)
     (.addEventListener js/document "keypress" keypress)
     (set! (.-src spritesheet) "spritesheet.png")
     (set! (.-imageSmoothingEnabled (. canvas getContext "2d")) false)

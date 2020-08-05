@@ -43,3 +43,15 @@ Model world as map of [x y] -> tile type, render it.
 Generate a walled world, add walls.
 
 Issues: code becomes tangled, too many places rely on each other.
+
+### Day 8 (03.08.2020)
+
+Lost in time. Add movement restrictions, probably.
+
+### Day 9 (05.08.2020)
+
+Rewrite world generation in functional style, added wave propagation algorithm to check for connectedness.
+
+Notes: world generation is much cleaner with iterate instead of loop+recur.
+
+Bugs: Sometimes white border around canvas dispappears.
